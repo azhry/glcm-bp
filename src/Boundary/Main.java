@@ -9,9 +9,11 @@ import Control.FileHandler;
 import Entity.CoOccurenceMatrix;
 import Entity.ImageData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JFileChooser;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -35,17 +37,11 @@ public class Main extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        featuresTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jButton1.setText("Load Image");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadImageFile(evt);
-            }
-        });
 
         jButton2.setText("Load Data");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -54,50 +50,44 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        featuresTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Filename", "ASM", "Contrast", "IDM", "Entropy", "Correlation", "Class"
+            }
+        ));
+        jScrollPane1.setViewportView(featuresTable);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(150, 150, 150)
-                .addComponent(jButton1)
-                .addContainerGap(133, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(jButton2)
-                .addGap(149, 149, 149))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(365, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(119, Short.MAX_VALUE)
-                .addComponent(jButton2)
-                .addGap(83, 83, 83)
-                .addComponent(jButton1)
-                .addGap(40, 40, 40))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void loadImageFile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadImageFile
-        JFileChooser chooser = new JFileChooser();
-        chooser.setCurrentDirectory(new java.io.File("./data"));
-        chooser.setDialogTitle("Choose File");
-        chooser.setAcceptAllFileFilterUsed(false);
-        
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            String path = chooser.getSelectedFile().toString();
-            ImageData img = new ImageData(path);
-            img.readPixels();
-//            img.logGreyPixels();
-            
-            CoOccurenceMatrix comatrix = new CoOccurenceMatrix(img);
-        } 
-        else {
-            System.out.println("No Selection ");
-        }
-    }//GEN-LAST:event_loadImageFile
 
     private void loadImageData(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadImageData
         JFileChooser chooser = new JFileChooser();
@@ -109,6 +99,8 @@ public class Main extends javax.swing.JFrame {
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             String directory = chooser.getSelectedFile().toString();
             FileHandler.read(directory);
+            List<Map<String, Double>> dataFeatures = new ArrayList<>();
+            List<Map<String, String>> metadata = new ArrayList<>();
             
             for (Map.Entry<String, List<String>> ent: 
                 FileHandler.LABELS.entrySet()) {
@@ -121,14 +113,36 @@ public class Main extends javax.swing.JFrame {
                     CoOccurenceMatrix comatrix = new CoOccurenceMatrix(img);
                     double[][] matrix = comatrix.createCoOccurences();
                     Map<String, Double> features = comatrix.calculateFeatures(matrix);
-                    System.out.println(
-                            features.get("asm") + ", " + 
-                            features.get("contrast") + ", " + 
-                            features.get("idm") + ", " + 
-                            features.get("entropy") + ", " + 
-                            features.get("correlation"));
+                    dataFeatures.add(features);
+                    
+                    Map<String, String> meta = new HashMap<>();
+                    meta.put("filename", filename);
+                    meta.put("class", ent.getKey());
+                    metadata.add(meta);
+//                    System.out.println(
+//                            features.get("asm") + ", " + 
+//                            features.get("contrast") + ", " + 
+//                            features.get("idm") + ", " + 
+//                            features.get("entropy") + ", " + 
+//                            features.get("correlation"));
                 }
                 
+            }
+            
+            DefaultTableModel model = (DefaultTableModel)this.featuresTable.getModel();
+            model.setColumnCount(7);
+            model.setRowCount(dataFeatures.size());
+            
+            for (int i = 0; i < dataFeatures.size(); i++) {
+                Map<String, Double> features = dataFeatures.get(i);
+                Map<String, String> meta = metadata.get(i);
+                model.setValueAt(meta.get("filename"), i, 0);
+                model.setValueAt(features.get("asm"), i, 1);
+                model.setValueAt(features.get("contrast"), i, 2);
+                model.setValueAt(features.get("idm"), i, 3);
+                model.setValueAt(features.get("entropy"), i, 4);
+                model.setValueAt(features.get("correlation"), i, 5);
+                model.setValueAt(meta.get("class"), i, 6);
             }
         } 
         else {
@@ -172,7 +186,8 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JTable featuresTable;
     private javax.swing.JButton jButton2;
+    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

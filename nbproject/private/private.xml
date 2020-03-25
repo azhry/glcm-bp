@@ -3,9 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/NeuralNetwork/Loss.java</file>
+            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/NeuralNetwork/NeuralNetwork.java</file>
+            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/NeuralNetwork/Activation.java</file>
             <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/Entity/CoOccurenceMatrix.java</file>
+            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/Control/MathFx.java</file>
             <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/Entity/ImageData.java</file>
             <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/Boundary/Main.java</file>
+            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/NeuralNetwork/Neuron.java</file>
         </group>
     </open-files>
 </project-private>
