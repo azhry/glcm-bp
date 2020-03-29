@@ -28,10 +28,12 @@ public class ImageData {
     private int[][] blues;
     private int[][] alphas;
     private int[][] greys;
+    private String label;
     
     
-    public ImageData(String path) {
+    public ImageData(String path, String label) {
         this.path = path;
+        this.label = label;
         this.img = this.readFile();
     }
     
@@ -48,6 +50,10 @@ public class ImageData {
         }
         
         return null;
+    }
+    
+    public String getLabel() {
+        return this.label;
     }
     
     public void logGreyPixels() {

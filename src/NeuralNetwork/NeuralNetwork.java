@@ -108,8 +108,7 @@ public class NeuralNetwork {
             javax.swing.JLabel neuralNetworkLossChart, 
             List<OutputNeuronLog> logs, 
             javax.swing.JLabel classifiedRatioText, 
-            javax.swing.JTable nnResultTable, 
-            javax.swing.JTextField rewardFactorField) {
+            javax.swing.JTable nnResultTable) {
         this.epochLoss = new ArrayList<>();
         int progress = 0;
         int currentProgress = 0;
@@ -188,12 +187,12 @@ public class NeuralNetwork {
     
         this.saveWeight(progressBar);
         
-        this.score(this.testData, this.testTarget, model, rewardFactorField);
+        this.score(this.testData, this.testTarget, model);
         return cm;
     }
     
     public void score(double[][] data, double[][] target, 
-            DefaultTableModel model, javax.swing.JTextField rewardFactorField) {
+            DefaultTableModel model) {
         
         this.loadWeight();
 
@@ -214,11 +213,10 @@ public class NeuralNetwork {
 
             int maxActualIndex = MathFx.maxIndex(listTarget);
             cm.update(maxActualIndex, maxPredictedIndex);
-            
+            System.out.println(maxActualIndex + " " + maxPredictedIndex);
         }
         
         cm.showMatrix();
-        rewardFactorField.setText(String.valueOf(cm.getAccuracy()));
         
         model.setValueAt(model.getValueAt(0, 1) + ", (Test = " + 
                 Math.round(((cm.getAccuracy() * 100.0) / 100.0) 
@@ -519,10 +517,8 @@ public class NeuralNetwork {
         double[] z1_delta = new double[this.numHiddenNeuron1];
         for (int i = 0; i < this.hidden1Hidden2Connections[0].length; i++) {
             for (int j = 0; j < this.hidden1Hidden2Connections.length; j++) {
-             
                 z1_delta[i] += a2_delta[j] * 
                         this.hidden1Hidden2Connections[j][i];
-                
             }
         }
         

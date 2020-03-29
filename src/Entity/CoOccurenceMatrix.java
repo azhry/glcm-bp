@@ -20,6 +20,7 @@ public class CoOccurenceMatrix {
     private final int height;
     private int maxPixel;
     private int minPixel;
+    private Map<String, Double> features = new HashMap<>();
     
     public CoOccurenceMatrix(ImageData img) {
         this.img = img;
@@ -44,6 +45,10 @@ public class CoOccurenceMatrix {
                 }
             }
         }
+    }
+    
+    public ImageData getImageData() {
+        return this.img;
     }
     
     public double[][] createCoOccurences() {
@@ -73,6 +78,15 @@ public class CoOccurenceMatrix {
                         matrix_135_normalized);
         
         return coOccurenceMatrix;
+    }
+    
+    public double[] getFeatures() {
+        double[] features = new double[this.features.size()];
+        int i = 0;
+        for (Map.Entry<String, Double> entry : this.features.entrySet()) {
+            features[i++] = entry.getValue();
+        }
+        return features;
     }
     
     public Map<String, Double> calculateFeatures(double[][] coOccurenceMatrix) {
@@ -138,6 +152,9 @@ public class CoOccurenceMatrix {
             double normalizedValue = ((0.8 * (entry.getValue() - lowerBound)) / (upperBound - lowerBound)) + 0.1;
             normalizedFeatures.put(entry.getKey(), normalizedValue);
         }
+        
+        this.features = new HashMap<>();
+        this.features = normalizedFeatures;
         
         return normalizedFeatures;
     }
