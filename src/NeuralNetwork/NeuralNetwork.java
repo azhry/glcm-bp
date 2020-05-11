@@ -57,8 +57,8 @@ public class NeuralNetwork {
     private double[] crossEntropyDerivatives;
     private final double[][] data;
     private final double[][] target;
-    private final double[][] testData;
-    private final double[][] testTarget;
+    private double[][] testData;
+    private double[][] testTarget;
     
     private double error;
     private List<Double> epochLoss;
@@ -66,25 +66,28 @@ public class NeuralNetwork {
     public NeuralNetwork(double[][] data, double[][] target, 
             int numHiddens, double learningRate, int epoch, double splitRatio) {
         int numData = data.length;
-        this.data = new double[(int)(numData * splitRatio)][data[0].length];
-        this.target = new double[(int)(numData * splitRatio)][target[0].length];
-        
-        this.testData = new double
-                [numData - (int)(numData * splitRatio)][data[0].length];
-        this.testTarget = new double
-                [numData - (int)(numData * splitRatio)][target[0].length];
-        
-        for (int i = 0; i < numData; i++) {
-            
-            if (i >= (int)(numData * splitRatio)) {
-                this.testData[i - (int)(numData * splitRatio)] = data[i];
-                this.testTarget[i - (int)(numData * splitRatio)] = target[i];
-            }
-            else {
-                this.data[i] = data[i];
-                this.target[i] = target[i];
-            }
-        }
+//        this.data = new double[(int)(numData * splitRatio)][data[0].length];
+//        this.target = new double[(int)(numData * splitRatio)][target[0].length];
+//        
+//        this.testData = new double
+//                [numData - (int)(numData * splitRatio)][data[0].length];
+//        this.testTarget = new double
+//                [numData - (int)(numData * splitRatio)][target[0].length];
+//        
+//        for (int i = 0; i < numData; i++) {
+//            
+//            if (i >= (int)(numData * splitRatio)) {
+//                this.testData[i - (int)(numData * splitRatio)] = data[i];
+//                this.testTarget[i - (int)(numData * splitRatio)] = target[i];
+//            }
+//            else {
+//                this.data[i] = data[i];
+//                this.target[i] = target[i];
+//            }
+//        }
+
+        this.data = data;
+        this.target = target;
         
         this.learningRate = learningRate;
         this.EPOCH = epoch;
@@ -102,6 +105,11 @@ public class NeuralNetwork {
         this.initializeInputHidden1Connections();
         this.initializeHidden1Hidden2Connections();
         this.initializeHidden2OutputConnections();
+    }
+    
+    public void setTestData(double[][] data, double[][] target) {
+        this.testData = data;
+        this.testTarget = target;
     }
     
     public ConfusionMatrix fit(JProgressBar progressBar, 
@@ -419,8 +427,8 @@ public class NeuralNetwork {
     
     private void backpropagation(double[] actual) {
         this.calculateOutputHidden2(actual);
-        this.calculateHidden2Hidden1();
-        this.calculateHidden1Input();
+//        this.calculateHidden2Hidden1();
+//        this.calculateHidden1Input();
     }
     
     private void calculateInputHidden1(double[] data) {

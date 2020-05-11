@@ -30,6 +30,9 @@ public class Main extends javax.swing.JFrame {
     private List<ImageData> data = new ArrayList<>();
     private List<CoOccurenceMatrix> comatrices = new ArrayList<>();
     private List<Map<String, Double>> features = new ArrayList<>();
+    private List<ImageData> testData = new ArrayList<>();
+    private List<CoOccurenceMatrix> testComatrices = new ArrayList<>();
+    private List<Map<String, Double>> testFeatures = new ArrayList<>();
     private List<OutputNeuronLog> rowLog = new ArrayList<>();
     private boolean shuffled = false;
     
@@ -66,10 +69,11 @@ public class Main extends javax.swing.JFrame {
         neuralNetworkProgressBar = new javax.swing.JProgressBar();
         outputNeuronLogPanel = new javax.swing.JPanel();
         randomizeCheckBox = new javax.swing.JCheckBox();
+        loadDataTestingButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        loadDataButton.setText("Load Data");
+        loadDataButton.setText("Load Data Training");
         loadDataButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadImageData(evt);
@@ -130,6 +134,7 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        splitRatioField.setEditable(false);
         splitRatioField.setText("0.7");
 
         jLabel3.setText("Split Ratio");
@@ -148,24 +153,30 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        loadDataTestingButton.setText("Load Data Testing");
+        loadDataTestingButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadDataTesting(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(loadDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(splitRatioField))
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(loadDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(splitRatioField)
+                    .addComponent(jLabel3)
+                    .addComponent(loadDataTestingButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(26, 26, 26)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -183,13 +194,16 @@ public class Main extends javax.swing.JFrame {
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(132, 132, 132)
-                                .addComponent(classifiedRatio)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(outputNeuronLogPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
-                        .addGap(9, 9, 9))
-                    .addComponent(neuralNetworkProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(neuralNetworkLossChart, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                                .addComponent(classifiedRatio))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(32, 32, 32)
+                        .addComponent(outputNeuronLogPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                        .addGap(24, 24, 24))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(neuralNetworkProgressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
+                            .addComponent(neuralNetworkLossChart, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -201,7 +215,10 @@ public class Main extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(splitRatioField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(loadDataButton))
+                        .addComponent(loadDataButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(loadDataTestingButton)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -236,16 +253,21 @@ public class Main extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // - loadImageData(evt : ActionEvent) : void
     private void loadImageData(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadImageData
+        
+        // memunculkan kotak dialog - start
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("./data"));
         chooser.setDialogTitle("Select Dataset Folder");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); // milih folder
         chooser.setAcceptAllFileFilterUsed(false);
+        // memunculkan kotak dialog - end
         
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            // kode program yg dieksekusi ketika telah memilih file/folder
             String directory = chooser.getSelectedFile().toString();
-            FileHandler.read(directory);
+            FileHandler.read(directory); // membaca isi direktori
             List<Map<String, Double>> dataFeatures = new ArrayList<>();
             List<Map<String, String>> metadata = new ArrayList<>();
             
@@ -260,7 +282,7 @@ public class Main extends javax.swing.JFrame {
                 for (String filename : ent.getValue()) {
                     System.out.println(filename);
                     ImageData img = new ImageData(path + "/" + filename, ent.getKey());
-                    img.readPixels();
+                    img.readPixels(); // membaca pixel gambar
                     CoOccurenceMatrix comatrix = new CoOccurenceMatrix(img);
                     double[][] matrix = comatrix.createCoOccurences();
                     Map<String, Double> featuresMatrix = comatrix.calculateFeatures(matrix);
@@ -300,6 +322,20 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_loadImageData
 
     private void runNeuralNetwork(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runNeuralNetwork
+        if (this.comatrices.size() <= 0) {
+            JOptionPane.showMessageDialog(null, 
+                    "Anda harus memuat data latih terlebih dahulu", "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (this.testComatrices.size() <= 0) {
+            JOptionPane.showMessageDialog(null, 
+                    "Anda harus memuat data uji terlebih dahulu", "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         this.rowLog = new ArrayList<>();
         this.outputNeuronLogPanel.removeAll();
         Object[] labels = FileHandler.LABELS.keySet().toArray();
@@ -345,11 +381,29 @@ public class Main extends javax.swing.JFrame {
         
         int epoch = Integer.parseInt(String.valueOf(this.epochField.getValue()));
         double learningRate = Double.parseDouble(this.learningRateField.getText());
-        double splitRatio = Double.parseDouble(this.splitRatioField.getText());
+//        double splitRatio = Double.parseDouble(this.splitRatioField.getText());
+        double splitRatio = 0.7;
         
         NeuralNetwork nn = new NeuralNetwork(finalFeatures, finalClasses, 
                 labels.length + 2, learningRate, epoch, splitRatio);
-//        nn.fit(neuralNetworkProgressBar, neuralNetworkLossChart, rowLog, classifiedRatio, nnResultTable);
+        
+        List<double[]> testFeatures = new ArrayList<>();
+        List<double[]> testClasses = new ArrayList<>();
+        
+        for (CoOccurenceMatrix comatrix : this.testComatrices) {
+            testFeatures.add(comatrix.getFeatures());
+            testClasses.add(encodedLabels.get(comatrix.getImageData().getLabel()));
+        }
+        
+        double[][] finalTestFeatures = new double[testFeatures.size()][];
+        double[][] finalTestClasses = new double[testClasses.size()][];
+        for (int i = 0; i < testFeatures.size(); i++) {
+            finalTestFeatures[i] = testFeatures.get(i);
+            finalTestClasses[i] = testClasses.get(i);
+        }
+        
+        nn.setTestData(finalTestFeatures, finalTestClasses);
+        
         new RunNeuralNetworkWorker(nn, this.neuralNetworkProgressBar, 
                 this.neuralNetworkLossChart, this.rowLog, this.classifiedRatio, 
                 this.nnResultTable)
@@ -359,6 +413,72 @@ public class Main extends javax.swing.JFrame {
     private void randomizeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_randomizeCheckBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_randomizeCheckBoxActionPerformed
+
+    private void loadDataTesting(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadDataTesting
+        // memunculkan kotak dialog - start
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("./data"));
+        chooser.setDialogTitle("Select Dataset Folder");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); // milih folder
+        chooser.setAcceptAllFileFilterUsed(false);
+        // memunculkan kotak dialog - end
+        
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            // kode program yg dieksekusi ketika telah memilih file/folder
+            String directory = chooser.getSelectedFile().toString();
+            FileHandler.read(directory); // membaca isi direktori
+            List<Map<String, Double>> dataFeatures = new ArrayList<>();
+            List<Map<String, String>> metadata = new ArrayList<>();
+            
+            this.testData = new ArrayList<>();
+            this.testComatrices = new ArrayList<>();
+            this.testFeatures = new ArrayList<>();
+            
+            for (Map.Entry<String, List<String>> ent: 
+                FileHandler.LABELS.entrySet()) {
+                
+                String path = directory + "/" + ent.getKey();
+                for (String filename : ent.getValue()) {
+                    System.out.println(filename);
+                    ImageData img = new ImageData(path + "/" + filename, ent.getKey());
+                    img.readPixels(); // membaca pixel gambar
+                    CoOccurenceMatrix comatrix = new CoOccurenceMatrix(img);
+                    double[][] matrix = comatrix.createCoOccurences();
+                    Map<String, Double> featuresMatrix = comatrix.calculateFeatures(matrix);
+                    dataFeatures.add(featuresMatrix);
+                    
+                    this.testData.add(img);
+                    this.testComatrices.add(comatrix);
+                    this.testFeatures.add(featuresMatrix);
+                    
+                    Map<String, String> meta = new HashMap<>();
+                    meta.put("filename", filename);
+                    meta.put("class", ent.getKey());
+                    metadata.add(meta);
+                }
+                
+            }
+            
+            DefaultTableModel model = (DefaultTableModel)this.featuresTable.getModel();
+            model.setColumnCount(7);
+            model.setRowCount(dataFeatures.size());
+            
+            for (int i = 0; i < dataFeatures.size(); i++) {
+                Map<String, Double> featuresMatrix = dataFeatures.get(i);
+                Map<String, String> meta = metadata.get(i);
+                model.setValueAt(meta.get("filename"), i, 0);
+                model.setValueAt(featuresMatrix.get("asm"), i, 1);
+                model.setValueAt(featuresMatrix.get("contrast"), i, 2);
+                model.setValueAt(featuresMatrix.get("idm"), i, 3);
+                model.setValueAt(featuresMatrix.get("entropy"), i, 4);
+                model.setValueAt(featuresMatrix.get("correlation"), i, 5);
+                model.setValueAt(meta.get("class"), i, 6);
+            }
+        } 
+        else {
+            System.out.println("No Selection ");
+        }
+    }//GEN-LAST:event_loadDataTesting
     
     class RunNeuralNetworkWorker extends SwingWorker {
 
@@ -448,6 +568,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField learningRateField;
     private javax.swing.JButton loadDataButton;
+    private javax.swing.JButton loadDataTestingButton;
     private javax.swing.JLabel neuralNetworkLossChart;
     private javax.swing.JProgressBar neuralNetworkProgressBar;
     private javax.swing.JTable nnResultTable;
