@@ -63,6 +63,9 @@ public class NeuralNetwork {
     private double error;
     private List<Double> epochLoss;
     
+    private ConfusionMatrix trainCm;
+    private ConfusionMatrix testCm;
+    
     public NeuralNetwork(double[][] data, double[][] target, 
             int numHiddens, double learningRate, int epoch, double splitRatio) {
         int numData = data.length;
@@ -116,14 +119,15 @@ public class NeuralNetwork {
             javax.swing.JLabel neuralNetworkLossChart, 
             List<OutputNeuronLog> logs, 
             javax.swing.JLabel classifiedRatioText, 
-            javax.swing.JTable nnResultTable) {
+            javax.swing.JTable nnResultTable, 
+            javax.swing.JLabel overallAccuracyLabel) {
         this.epochLoss = new ArrayList<>();
         int progress = 0;
         int currentProgress = 0;
         int maxProgress = this.EPOCH * this.data.length;
         int corrects = 0;
         int incorrects = 0;
-        ConfusionMatrix cm = new ConfusionMatrix();
+        this.trainCm = new ConfusionMatrix();
         
         DefaultTableModel model = (DefaultTableModel)nnResultTable.getModel();
         model.setRowCount(4);
@@ -149,7 +153,7 @@ public class NeuralNetwork {
                 }
                 
                 int maxActualIndex = MathFx.maxIndex(listTarget);
-                cm.update(maxActualIndex, maxPredictedIndex);
+                this.trainCm.update(maxActualIndex, maxPredictedIndex);
                 
                 
                 if (maxActualIndex == maxPredictedIndex) {
@@ -176,13 +180,13 @@ public class NeuralNetwork {
                 progressBar.setString(progress + "%");
             }
             
-            model.setValueAt("(Train = " + Math.round(((cm.getAccuracy() * 100.0) / 100.0) 
+            model.setValueAt("(Train = " + Math.round(((this.trainCm.getAccuracy() * 100.0) / 100.0) 
                     * 100.0) + "%)", 0, 1);
-            model.setValueAt("(Train = " + Math.round(((cm.getPrecision() * 100.0) / 100.0) 
+            model.setValueAt("(Train = " + Math.round(((this.trainCm.getPrecision() * 100.0) / 100.0) 
                     * 100.0) + "%)", 1, 1);
-            model.setValueAt("(Train = " + Math.round(((cm.getRecall() * 100.0) / 100.0) 
+            model.setValueAt("(Train = " + Math.round(((this.trainCm.getRecall() * 100.0) / 100.0) 
                     * 100.0) + "%)", 2, 1);
-            model.setValueAt("(Train = " + Math.round(((cm.getF1score() * 100.0) / 100.0) 
+            model.setValueAt("(Train = " + Math.round(((this.trainCm.getF1score() * 100.0) / 100.0) 
                     * 100.0) + "%)", 3, 1);
             this.epochLoss.add(this.error);
             this.displayLossChart(neuralNetworkLossChart);
@@ -190,21 +194,21 @@ public class NeuralNetwork {
             if (e == this.EPOCH - 1) {
                 break;
             }
-            cm.reset();
+            this.trainCm.reset();
         }
     
         this.saveWeight(progressBar);
         
-        this.score(this.testData, this.testTarget, model);
-        return cm;
+        this.score(this.testData, this.testTarget, model, overallAccuracyLabel);
+        return this.trainCm;
     }
     
     public void score(double[][] data, double[][] target, 
-            DefaultTableModel model) {
+            DefaultTableModel model, javax.swing.JLabel overallAccuracyLabel) {
         
         this.loadWeight();
 
-        ConfusionMatrix cm = new ConfusionMatrix();
+        this.testCm = new ConfusionMatrix();
         for (int i = 0; i < data.length; i++) {
             this.feedforward(data[i]);
             
@@ -220,24 +224,40 @@ public class NeuralNetwork {
             }
 
             int maxActualIndex = MathFx.maxIndex(listTarget);
-            cm.update(maxActualIndex, maxPredictedIndex);
+            this.testCm.update(maxActualIndex, maxPredictedIndex);
             System.out.println(maxActualIndex + " " + maxPredictedIndex);
         }
         
-        cm.showMatrix();
+        this.testCm.showMatrix();
+        
+        double totalAccuracy = (double)(this.trainCm.getTruePositive() + 
+                this.testCm.getTruePositive()) / 
+                (double)(this.trainCm.getTotalSamples() + 
+                this.testCm.getTotalSamples());
+        
+        System.out.println(this.trainCm.getTruePositive());
+        System.out.println(this.testCm.getTruePositive());
+        System.out.println(this.testCm.getTotalSamples());
+        System.out.println(this.trainCm.getTotalSamples());
+        System.out.println(totalAccuracy);
         
         model.setValueAt(model.getValueAt(0, 1) + ", (Test = " + 
-                Math.round(((cm.getAccuracy() * 100.0) / 100.0) 
+                Math.round(((this.testCm.getAccuracy() * 100.0) / 100.0) 
                 * 100.0) + "%)", 0, 1);
         model.setValueAt(model.getValueAt(1, 1) + ", (Test = " + 
-                Math.round(((cm.getPrecision() * 100.0) / 100.0) 
+                Math.round(((this.testCm.getPrecision() * 100.0) / 100.0) 
                 * 100.0) + "%)", 1, 1);
         model.setValueAt(model.getValueAt(2, 1) + ", (Test = " + 
-                Math.round(((cm.getRecall() * 100.0) / 100.0) 
+                Math.round(((this.testCm.getRecall() * 100.0) / 100.0) 
                 * 100.0) + "%)", 2, 1);
         model.setValueAt(model.getValueAt(3, 1) + ", (Test = " + 
-                Math.round(((cm.getF1score() * 100.0) / 100.0) 
+                Math.round(((this.testCm.getF1score() * 100.0) / 100.0) 
                 * 100.0) + "%)", 3, 1);
+        
+        
+
+        overallAccuracyLabel.setText("(Overall Accuracy = " + 
+                (totalAccuracy * 100.0) + "%)");
     }
     
     public void loadWeight() {

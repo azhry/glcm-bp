@@ -41,10 +41,10 @@
                               <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="randomizeCheckBox" min="-2" max="-2" attributes="0"/>
-                                  <Group type="102" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Component id="jLabel1" max="32767" attributes="0"/>
-                                          <Component id="learningRateField" max="32767" attributes="0"/>
+                                          <Component id="learningRateField" min="-2" pref="97" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -63,12 +63,13 @@
                               <Component id="classifiedRatio" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jScrollPane2" alignment="0" min="-2" pref="270" max="-2" attributes="0"/>
+                          <Component id="overallAccuracyLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                      <Component id="outputNeuronLogPanel" pref="220" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
+                      <Component id="outputNeuronLogPanel" pref="217" max="32767" attributes="0"/>
                       <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                           <Component id="neuralNetworkProgressBar" alignment="0" pref="511" max="32767" attributes="0"/>
                           <Component id="neuralNetworkLossChart" alignment="0" max="32767" attributes="0"/>
@@ -104,7 +105,14 @@
                               <Component id="neuralNetworkProgressBar" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="outputNeuronLogPanel" min="-2" pref="268" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <Component id="overallAccuracyLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jScrollPane2" min="-2" pref="105" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
@@ -123,9 +131,7 @@
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="classifiedRatio" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="outputNeuronLogPanel" min="-2" pref="268" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="24" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -336,6 +342,8 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadDataTesting"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="overallAccuracyLabel">
     </Component>
   </SubComponents>
 </Form>

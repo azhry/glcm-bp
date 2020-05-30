@@ -2,16 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/NeuralNetwork/NeuralNetwork.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/Control/FileHandler.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/NeuralNetwork/ConfusionMatrix.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/NeuralNetwork/Activation.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/Entity/CoOccurenceMatrix.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/Entity/ImageData.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/Boundary/OutputNeuronLog.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/Boundary/Main.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/GLCM-BP/src/NeuralNetwork/Neuron.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

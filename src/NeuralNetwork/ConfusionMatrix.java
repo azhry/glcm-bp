@@ -16,6 +16,7 @@ import java.util.List;
 public class ConfusionMatrix {
 
     private int totalSamples;
+    private int truePositive;
     private int[][] matrix = new int[1][1];
     private double accuracy;
     private double precision;
@@ -32,7 +33,16 @@ public class ConfusionMatrix {
         this.precision = 0.0;
         this.recall = 0.0;
         this.f1score = 0.0;
+        this.truePositive = 0;
         this.matrix = new int[1][1];
+    }
+    
+    public int getTruePositive() {
+        return this.truePositive;
+    }
+    
+    public int getTotalSamples() {
+        return this.totalSamples;
     }
     
     public void update(int actual, int predicted) {
@@ -64,11 +74,11 @@ public class ConfusionMatrix {
     }
     
     private void calculateAccuracy() {
-        int truePositives = 0;
+        this.truePositive = 0;
         for (int i = 0; i < this.matrix.length; i++) {
-            truePositives += this.matrix[i][i];
+            this.truePositive += this.matrix[i][i];
         }
-        this.accuracy = (double)truePositives / (double)this.totalSamples;
+        this.accuracy = (double)this.truePositive / (double)this.totalSamples;
     }
     
     public double getRecall() {
