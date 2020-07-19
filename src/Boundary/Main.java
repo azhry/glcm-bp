@@ -275,7 +275,7 @@ public class Main extends javax.swing.JFrame {
                     ImageData img = new ImageData(path + "/" + filename, ent.getKey());
                     img.readPixels(); // membaca pixel gambar
                     CoOccurenceMatrix comatrix = new CoOccurenceMatrix(img);
-                    double[][] matrix = comatrix.createCoOccurences();
+                    double[][] matrix = comatrix.createCoOccurences(); // membuat co-occurence matrix
                     Map<String, Double> featuresMatrix = comatrix.calculateFeatures(matrix);
                     dataFeatures.add(featuresMatrix);
                     
@@ -283,6 +283,7 @@ public class Main extends javax.swing.JFrame {
                     this.comatrices.add(comatrix);
                     this.features.add(featuresMatrix);
                     
+                    // menyimpan nama file dan class gambar
                     Map<String, String> meta = new HashMap<>();
                     meta.put("filename", filename);
                     meta.put("class", ent.getKey());
@@ -295,6 +296,7 @@ public class Main extends javax.swing.JFrame {
             model.setColumnCount(7);
             model.setRowCount(dataFeatures.size());
             
+            // menampilkan hasil pada table
             for (int i = 0; i < dataFeatures.size(); i++) {
                 Map<String, Double> featuresMatrix = dataFeatures.get(i);
                 Map<String, String> meta = metadata.get(i);
@@ -327,11 +329,13 @@ public class Main extends javax.swing.JFrame {
             return;
         }
         
+        // menginisialisasi panel nilai output neuron
         this.rowLog = new ArrayList<>();
         this.outputNeuronLogPanel.removeAll();
         Object[] labels = FileHandler.LABELS.keySet().toArray();
         Map<String, double[]> encodedLabels = new HashMap<>();
         
+        // mengubah class gambar dari string menjadi angka
         for (int i = 0; i < labels.length; i++) {
             double[] encoded = new double[labels.length];
             encoded[i] = 1.0;
@@ -352,12 +356,14 @@ public class Main extends javax.swing.JFrame {
         
         boolean randomize = this.randomizeCheckBox.isSelected();
         
+        // shuffle urutan data secara acak jika checkbox randomize dicentang
         if (!this.shuffled || randomize) {
             this.shuffled = true;
             Collections.shuffle(this.data);
             Collections.shuffle(this.comatrices);
         }
         
+        // menampung features(co-occurence matrix) dan class ke dalam array
         for (CoOccurenceMatrix comatrix : this.comatrices) {
             features.add(comatrix.getFeatures());
             classes.add(encodedLabels.get(comatrix.getImageData().getLabel()));
@@ -375,12 +381,14 @@ public class Main extends javax.swing.JFrame {
 //        double splitRatio = Double.parseDouble(this.splitRatioField.getText());
         double splitRatio = 0.7;
         
+        // menginisialisasi object NeuralNetwork dengan nilai-nilai yang di-inputkan
         NeuralNetwork nn = new NeuralNetwork(finalFeatures, finalClasses, 
                 labels.length + 2, learningRate, epoch, splitRatio);
         
         List<double[]> testFeatures = new ArrayList<>();
         List<double[]> testClasses = new ArrayList<>();
         
+        // menampung features(co-occurence matrix) dan class test ke dalam array
         for (CoOccurenceMatrix comatrix : this.testComatrices) {
             testFeatures.add(comatrix.getFeatures());
             testClasses.add(encodedLabels.get(comatrix.getImageData().getLabel()));
@@ -395,6 +403,7 @@ public class Main extends javax.swing.JFrame {
         
         nn.setTestData(finalTestFeatures, finalTestClasses);
         
+        // menjalankan NeuralNetwork dengan worker
         new RunNeuralNetworkWorker(nn, this.neuralNetworkProgressBar, 
                 this.neuralNetworkLossChart, this.rowLog, this.classifiedRatio, 
                 this.nnResultTable, this.overallAccuracyLabel)
@@ -433,7 +442,7 @@ public class Main extends javax.swing.JFrame {
                     System.out.println(filename);
                     ImageData img = new ImageData(path + "/" + filename, ent.getKey());
                     img.readPixels(); // membaca pixel gambar
-                    CoOccurenceMatrix comatrix = new CoOccurenceMatrix(img);
+                    CoOccurenceMatrix comatrix = new CoOccurenceMatrix(img); // membuat co-occurence matrix
                     double[][] matrix = comatrix.createCoOccurences();
                     Map<String, Double> featuresMatrix = comatrix.calculateFeatures(matrix);
                     dataFeatures.add(featuresMatrix);
@@ -442,6 +451,7 @@ public class Main extends javax.swing.JFrame {
                     this.testComatrices.add(comatrix);
                     this.testFeatures.add(featuresMatrix);
                     
+                    // menyimpan nama file dan class gambar
                     Map<String, String> meta = new HashMap<>();
                     meta.put("filename", filename);
                     meta.put("class", ent.getKey());
@@ -454,6 +464,7 @@ public class Main extends javax.swing.JFrame {
             model.setColumnCount(7);
             model.setRowCount(dataFeatures.size());
             
+            // menampilkan hasil pada table
             for (int i = 0; i < dataFeatures.size(); i++) {
                 Map<String, Double> featuresMatrix = dataFeatures.get(i);
                 Map<String, String> meta = metadata.get(i);
@@ -508,6 +519,7 @@ public class Main extends javax.swing.JFrame {
         
         @Override
         protected Object doInBackground() throws Exception {
+            // mengeksekusi NeuralNetwork dan menyimpan hasilnya ke confusion matrix
             ConfusionMatrix cm = this.nn.fit(this.progressBar, this.lossChart, this.logs, 
                     this.classifiedRatioText, this.nnResultTable, this.overallAccuracyText);
             return null;

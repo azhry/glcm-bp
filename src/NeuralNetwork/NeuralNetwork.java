@@ -69,25 +69,6 @@ public class NeuralNetwork {
     public NeuralNetwork(double[][] data, double[][] target, 
             int numHiddens, double learningRate, int epoch, double splitRatio) {
         int numData = data.length;
-//        this.data = new double[(int)(numData * splitRatio)][data[0].length];
-//        this.target = new double[(int)(numData * splitRatio)][target[0].length];
-//        
-//        this.testData = new double
-//                [numData - (int)(numData * splitRatio)][data[0].length];
-//        this.testTarget = new double
-//                [numData - (int)(numData * splitRatio)][target[0].length];
-//        
-//        for (int i = 0; i < numData; i++) {
-//            
-//            if (i >= (int)(numData * splitRatio)) {
-//                this.testData[i - (int)(numData * splitRatio)] = data[i];
-//                this.testTarget[i - (int)(numData * splitRatio)] = target[i];
-//            }
-//            else {
-//                this.data[i] = data[i];
-//                this.target[i] = target[i];
-//            }
-//        }
 
         this.data = data;
         this.target = target;
@@ -135,9 +116,12 @@ public class NeuralNetwork {
         
         for (int e = 0; e < this.EPOCH; e++) {
             for (int i = 0; i < this.data.length; i++) {
+                // melakukan feedforward
                 this.feedforward(this.data[i]);
                 
                 List<Double> outputNeuronValues = new ArrayList<>();
+                
+                // set warna pada tampilan output neuron log
                 for (int j = 0; j < this.numOutputNeuron; j++) {
                     logs.get(j).valueText
                             .setText(String.valueOf(
@@ -146,16 +130,21 @@ public class NeuralNetwork {
                     outputNeuronValues
                             .add(this.outputNeurons[j].getMappedValue());
                 }
+                
+                // menentukan class yang terprediksi
                 int maxPredictedIndex = MathFx.maxIndex(outputNeuronValues);
                 List<Double> listTarget = new ArrayList<>();
                 for (double t : this.target[i]) {
                     listTarget.add(t);
                 }
                 
+                // menentukan class actual
                 int maxActualIndex = MathFx.maxIndex(listTarget);
+                
+                // update confusion matrix dengan class terprediksi dan class actual
                 this.trainCm.update(maxActualIndex, maxPredictedIndex);
                 
-                
+                // menghitung jumlah klasifikasi benar dan salah
                 if (maxActualIndex == maxPredictedIndex) {
                     logs.get(maxPredictedIndex)
                         .setBackground(Color.GREEN);
@@ -171,7 +160,7 @@ public class NeuralNetwork {
                         " (" + (incorrects - corrects) + ")");
                 this.error = this.calculateError(this.target[i]);
                 
-                
+                // melakukan backpropagation
                 this.backpropagation(this.target[i]);
                 currentProgress++;
                 progress = (int)(((double)currentProgress / 
@@ -180,6 +169,7 @@ public class NeuralNetwork {
                 progressBar.setString(progress + "%");
             }
             
+            // menampilkan hasil ke dalam table
             model.setValueAt("(Train = " + Math.round(((this.trainCm.getAccuracy() * 100.0) / 100.0) 
                     * 100.0) + "%)", 0, 1);
             model.setValueAt("(Train = " + Math.round(((this.trainCm.getPrecision() * 100.0) / 100.0) 
@@ -197,8 +187,10 @@ public class NeuralNetwork {
             this.trainCm.reset();
         }
     
+        // menyimpan bobot NeuralNetwork
         this.saveWeight(progressBar);
         
+        // melakukan pengujian
         this.score(this.testData, this.testTarget, model, overallAccuracyLabel);
         return this.trainCm;
     }
@@ -206,10 +198,13 @@ public class NeuralNetwork {
     public void score(double[][] data, double[][] target, 
             DefaultTableModel model, javax.swing.JLabel overallAccuracyLabel) {
         
+        // memuat bobot yang disimpan
         this.loadWeight();
 
+        // inisialisasi Confusion Matrix pengujian
         this.testCm = new ConfusionMatrix();
         for (int i = 0; i < data.length; i++) {
+            // melakukan feedforward
             this.feedforward(data[i]);
             
             List<Double> outputNeuronValues = new ArrayList<>();
@@ -217,19 +212,24 @@ public class NeuralNetwork {
                 outputNeuronValues.add(this.outputNeurons[j].getMappedValue());
             }
             
+            // menentukan class terprediksi
             int maxPredictedIndex = MathFx.maxIndex(outputNeuronValues);
             List<Double> listTarget = new ArrayList<>();
             for (double t : target[i]) {
                 listTarget.add(t);
             }
 
+            // menentukan class actual
             int maxActualIndex = MathFx.maxIndex(listTarget);
+            
+            // update confusion matrix dengan class terprediksi dan class actual
             this.testCm.update(maxActualIndex, maxPredictedIndex);
             System.out.println(maxActualIndex + " " + maxPredictedIndex);
         }
         
         this.testCm.showMatrix();
         
+        // menghitung akurasi total keseluruhan
         double totalAccuracy = (double)(this.trainCm.getTruePositive() + 
                 this.testCm.getTruePositive()) / 
                 (double)(this.trainCm.getTotalSamples() + 
@@ -241,6 +241,7 @@ public class NeuralNetwork {
         System.out.println(this.trainCm.getTotalSamples());
         System.out.println(totalAccuracy);
         
+        // menampilkan hasil pengujian ke dalam table
         model.setValueAt(model.getValueAt(0, 1) + ", (Test = " + 
                 Math.round(((this.testCm.getAccuracy() * 100.0) / 100.0) 
                 * 100.0) + "%)", 0, 1);
@@ -255,7 +256,7 @@ public class NeuralNetwork {
                 * 100.0) + "%)", 3, 1);
         
         
-
+        // menampilkan akurasi total keseluruhan
         overallAccuracyLabel.setText("(Overall Accuracy = " + 
                 (totalAccuracy * 100.0) + "%)");
     }
@@ -440,30 +441,34 @@ public class NeuralNetwork {
     
     
     private void feedforward(double[] data) {
-        this.calculateInputHidden1(data);
-        this.calculateHidden1Hidden2();
-        this.calculateHidden2Output();
+        this.calculateInputHidden1(data); // menghitung nilai dari input ke hidden1
+        this.calculateHidden1Hidden2(); // menghitung nilai dari hidden1 ke hidden2
+        this.calculateHidden2Output(); // menghitung nilai dari hidden2 ke output
     }
     
     private void backpropagation(double[] actual) {
         this.calculateOutputHidden2(actual);
-//        this.calculateHidden2Hidden1();
-//        this.calculateHidden1Input();
     }
     
     private void calculateInputHidden1(double[] data) {
         for (int i = 0; i < this.numInputNeuron; i++) {
-            this.inputNeurons[i].setValue(data[i]);
+            this.inputNeurons[i].setValue(data[i]); // set nilai tiap neuron input
         }
         
         double bias = MathFx.randUniform(1);
         for (int i = 0; i < this.numHiddenNeuron1; i++) {
             double totalInputValue = 0.0;
+            
+            // menhitung total nilai tiap koneksi
             for (int j = 0; j < this.numInputNeuron; j++) {
                 totalInputValue += (this.inputHidden1Connections[i][j] * 
                         this.inputNeurons[j].getValue());
             }
+            
+            // menghitung nilai dengan fungsi aktivasi sigmoid
             double mappedValue = Activation.sigmoid(totalInputValue + bias);
+            
+            // set nilai tiap neuron hidden1
             this.hiddenNeurons1[i].setValue(totalInputValue + bias);
             this.hiddenNeurons1[i].setMappedValue(mappedValue);
         }
@@ -473,11 +478,17 @@ public class NeuralNetwork {
         double bias = MathFx.randUniform(1);
         for (int i = 0; i < this.numHiddenNeuron2; i++) {
             double totalInputValue = 0.0;
+            
+            // menhitung total nilai tiap koneksi
             for (int j = 0; j < this.numHiddenNeuron1; j++) {
                 totalInputValue += (this.hidden1Hidden2Connections[i][j] * 
                         this.hiddenNeurons1[j].getMappedValue());
             }
+            
+            // menghitung nilai dengan fungsi aktivasi sigmoid
             double mappedValue = Activation.sigmoid(totalInputValue + bias);
+            
+            // set nilai tiap neuron hidden2
             this.hiddenNeurons2[i].setValue(totalInputValue + bias);
             this.hiddenNeurons2[i].setMappedValue(mappedValue);
         }
@@ -489,6 +500,8 @@ public class NeuralNetwork {
         double[] inputValues = new double[this.numOutputNeuron];
         for (int i = 0; i < this.numOutputNeuron; i++) {
             double totalInputValue = 0.0;
+            
+            // menhitung total nilai tiap koneksi
             for (int j = 0; j < this.numHiddenNeuron2; j++) {
                 totalInputValue += (this.hidden2OutputConnections[i][j] * 
                         this.hiddenNeurons2[j].getMappedValue());
@@ -497,7 +510,10 @@ public class NeuralNetwork {
             this.outputNeurons[i].setValue(inputValues[i]);
         }
         
+        // menghitung nilai dengan fungsi aktivasi softmax
         double[] mappedValues = Activation.softmax(inputValues);
+        
+        // set nilai tiap neuron output
         for (int i = 0; i < mappedValues.length; i++) {
             this.outputNeurons[i].setMappedValue(mappedValues[i]);
         }
@@ -512,11 +528,12 @@ public class NeuralNetwork {
             outputNeuronValues[i] = this.outputNeurons[i].getValue();
         }
         
+        // menghitung loss dengan cross entropy
         double[] a3_delta = Loss.crossEntropy2(actual, outputNeuronValues);
         double[] z2_delta = new double[this.numHiddenNeuron2];
         for (int j = 0; j < this.hidden2OutputConnections[0].length; j++) {
             for (int k = 0; k < this.hidden2OutputConnections.length; k++) {
-
+                
                 z2_delta[j] += a3_delta[k] * 
                         this.hidden2OutputConnections[k][j];
 
@@ -526,6 +543,7 @@ public class NeuralNetwork {
         for (int i = 0; i < this.hidden2OutputConnections.length; i++) {
             for (int j = 0; j < this.hidden2OutputConnections[i].length; j++) {
                 
+                // update bobot koneksi hidden2 ke output
                 this.hidden2OutputConnections[i][j] += 
                         this.learningRate * a3_delta[i] 
                         * this.hiddenNeurons2[j].getMappedValue();
@@ -537,6 +555,8 @@ public class NeuralNetwork {
         for (int i = 0; i < this.numHiddenNeuron2; i++) {
             hidden2NeuronValues[i] = this.hiddenNeurons2[i].getMappedValue();
         }
+        
+        // menghitung delta dengan fungsi turunan sigmoid
         double[] a2_delta = Activation.sigmoidDerivatives(hidden2NeuronValues);
         for (int i = 0; i < a2_delta.length; i++) {
             a2_delta[i] = a2_delta[i] * z2_delta[i];
@@ -545,6 +565,7 @@ public class NeuralNetwork {
         double[] z1_delta = new double[this.numHiddenNeuron1];
         for (int i = 0; i < this.hidden1Hidden2Connections[0].length; i++) {
             for (int j = 0; j < this.hidden1Hidden2Connections.length; j++) {
+                
                 z1_delta[i] += a2_delta[j] * 
                         this.hidden1Hidden2Connections[j][i];
             }
@@ -552,7 +573,7 @@ public class NeuralNetwork {
         
         for (int i = 0; i < this.hidden1Hidden2Connections.length; i++) {
             for (int j = 0; j < this.hidden1Hidden2Connections[i].length; j++) {
-                
+                // update bobot koneksi hidden1 ke hidden2
                 this.hidden1Hidden2Connections[i][j] += 
                         this.learningRate * a2_delta[i] * 
                         this.hiddenNeurons1[j].getMappedValue();
@@ -565,6 +586,7 @@ public class NeuralNetwork {
             hidden1NeuronValues[i] = this.hiddenNeurons1[i].getMappedValue();
         }
         
+        // menghitung delta dengan fungsi turunan sigmoid
         double[] a1_delta = Activation.sigmoidDerivatives(hidden1NeuronValues);
         for (int i = 0; i < a1_delta.length; i++) {
             a1_delta[i] = a1_delta[i] * z1_delta[i];
@@ -572,38 +594,13 @@ public class NeuralNetwork {
         
         for (int i = 0; i < this.inputHidden1Connections.length; i++) {
             for (int j = 0; j < this.inputHidden1Connections[i].length; j++) {
-                
+                // update bobot koneksi input ke hidden1
                 this.inputHidden1Connections[i][j] += 
                         this.learningRate * a1_delta[i] *
                         this.inputNeurons[j].getValue();
                 
             }
         }
-//        double[] softmaxDerivatives = 
-//                Activation.softmaxDerivative(outputNeuronValues);
-//        
-//        for (int i = 0; i < this.numHiddenNeuron2; i++) {
-//            this.deltaHidden2[i] = 0.0;
-//            for (int j = 0; j < this.numOutputNeuron; j++) {
-//                this.deltaHidden2[i] += this.crossEntropyDerivatives[j] * 
-//                        softmaxDerivatives[j] * 
-//                        this.hiddenNeurons2[i].getMappedValue();
-//                this.hidden2OutputConnections[j][i] += (this.learningRate * 
-//                        this.crossEntropyDerivatives[j] * 
-//                        softmaxDerivatives[j]);
-//            }
-//            
-//        }
-        
-//        for (int i = 0; i < this.numOutputNeuron; i++) {
-//            for (int j = 0; j < this.numHiddenNeuron2; j++) {
-//                this.deltaHidden2Output[i][j] = 
-//                        this.crossEntropyDerivatives[i] * softmaxDerivatives[i] 
-//                        * this.hiddenNeurons2[j].getMappedValue();
-//                this.hidden2OutputConnections[i][j] += 
-//                        (this.learningRate * this.deltaHidden2Output[i][j]);
-//            }
-//        }
     }
     
     private void calculateHidden2Hidden1() {

@@ -28,6 +28,7 @@ public class FileHandler {
     
     public static void readRecursive(String path) {
         
+        // membaca file-file pada folder yang dipilih
         File[] entries = FileHandler.readDirectoryContent(path);
         for (File entry : entries) {
             if (entry.isDirectory()) {
