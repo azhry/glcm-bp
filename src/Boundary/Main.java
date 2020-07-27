@@ -329,6 +329,31 @@ public class Main extends javax.swing.JFrame {
             return;
         }
         
+        if (this.learningRateField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, 
+                    "Anda harus memasukkan nilai learning rate", "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        int epoch = Integer.parseInt(String.valueOf(this.epochField.getValue()));
+        double learningRate = Double.parseDouble(this.learningRateField.getText());
+        double splitRatio = 0.7;
+        
+        if (learningRate <= 0 || learningRate > 1) {
+            JOptionPane.showMessageDialog(null, 
+                    "Nilai learning rate hanya diizinkan antara 0 sampai 1", "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (epoch < 100 || epoch > 1500) {
+            JOptionPane.showMessageDialog(null, 
+                    "Nilai epoch hanya diizinkan antara 100 sampai 1500", "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         // menginisialisasi panel nilai output neuron
         this.rowLog = new ArrayList<>();
         this.outputNeuronLogPanel.removeAll();
@@ -375,11 +400,6 @@ public class Main extends javax.swing.JFrame {
             finalFeatures[i] = features.get(i);
             finalClasses[i] = classes.get(i);
         }
-        
-        int epoch = Integer.parseInt(String.valueOf(this.epochField.getValue()));
-        double learningRate = Double.parseDouble(this.learningRateField.getText());
-//        double splitRatio = Double.parseDouble(this.splitRatioField.getText());
-        double splitRatio = 0.7;
         
         // menginisialisasi object NeuralNetwork dengan nilai-nilai yang di-inputkan
         NeuralNetwork nn = new NeuralNetwork(finalFeatures, finalClasses, 
