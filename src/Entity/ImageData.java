@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 public class ImageData {
     
     private final String path;
+    private String filename;
     private int width;
     private int height;
     private BufferedImage img;
@@ -54,6 +55,18 @@ public class ImageData {
     
     public String getLabel() {
         return this.label;
+    }
+    
+    public String getPath() {
+        return this.path;
+    }
+    
+    public String getFilename() {
+        return this.filename;
+    }
+    
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
     
     public void logGreyPixels() {

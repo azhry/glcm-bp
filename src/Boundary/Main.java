@@ -10,14 +10,20 @@ import Entity.CoOccurenceMatrix;
 import Entity.ImageData;
 import NeuralNetwork.ConfusionMatrix;
 import NeuralNetwork.NeuralNetwork;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
@@ -41,6 +47,32 @@ public class Main extends javax.swing.JFrame {
      */
     public Main() {
         initComponents();
+    }
+    
+    public void displayResultTable(int[] predictedLabels) {
+        int size = this.data.size();
+        Object[] labels = FileHandler.LABELS.keySet().toArray();
+        String data[][] = new String[size][];    
+        String column[] = {"No", "Filename", "Actual Label", "Predicted Label"};
+        for (int i = 0; i < size; i++) {
+            data[i] = new String[]{String.valueOf((i + 1)), 
+                this.data.get(i).getFilename(), 
+                this.data.get(i).getLabel(),
+                String.valueOf(labels[predictedLabels[i]])};
+        }
+        
+
+        JTable table = new JTable(data, column);
+        JDialog dialog = new JDialog();
+        dialog.setLocationRelativeTo(null);
+        dialog.setLayout(new BorderLayout());
+        dialog.add(new JScrollPane(table, 
+              JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+              JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
+              BorderLayout.CENTER);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.pack();
+        dialog.setVisible(true);
     }
     
     /**
@@ -273,6 +305,7 @@ public class Main extends javax.swing.JFrame {
                 for (String filename : ent.getValue()) {
                     System.out.println(filename);
                     ImageData img = new ImageData(path + "/" + filename, ent.getKey());
+                    img.setFilename(filename);
                     img.readPixels(); // membaca pixel gambar
                     CoOccurenceMatrix comatrix = new CoOccurenceMatrix(img);
                     double[][] matrix = comatrix.createCoOccurences(); // membuat co-occurence matrix
@@ -461,6 +494,7 @@ public class Main extends javax.swing.JFrame {
                 for (String filename : ent.getValue()) {
                     System.out.println(filename);
                     ImageData img = new ImageData(path + "/" + filename, ent.getKey());
+                    img.setFilename(filename);
                     img.readPixels(); // membaca pixel gambar
                     CoOccurenceMatrix comatrix = new CoOccurenceMatrix(img); // membuat co-occurence matrix
                     double[][] matrix = comatrix.createCoOccurences();
@@ -533,6 +567,9 @@ public class Main extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, 
                     "Neural Network process is done", "Done", 
                     JOptionPane.INFORMATION_MESSAGE);
+            
+            int[] predictedLabels = this.nn.getPredictedLabels();
+            displayResultTable(predictedLabels);
             
             repaint();
         }

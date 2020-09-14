@@ -60,6 +60,8 @@ public class NeuralNetwork {
     private double[][] testData;
     private double[][] testTarget;
     
+    private int[] predictedLabels;
+    
     private double error;
     private List<Double> epochLoss;
     
@@ -94,6 +96,11 @@ public class NeuralNetwork {
     public void setTestData(double[][] data, double[][] target) {
         this.testData = data;
         this.testTarget = target;
+        this.predictedLabels = new int[this.testData.length];
+    }
+    
+    public int[] getPredictedLabels() {
+        return this.predictedLabels;
     }
     
     public ConfusionMatrix fit(JProgressBar progressBar, 
@@ -218,6 +225,8 @@ public class NeuralNetwork {
             for (double t : target[i]) {
                 listTarget.add(t);
             }
+            
+            this.predictedLabels[i] = maxPredictedIndex;
 
             // menentukan class actual
             int maxActualIndex = MathFx.maxIndex(listTarget);
