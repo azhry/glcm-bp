@@ -50,14 +50,14 @@ public class Main extends javax.swing.JFrame {
     }
     
     public void displayResultTable(int[] predictedLabels) {
-        int size = this.data.size();
+        int size = this.testData.size();
         Object[] labels = FileHandler.LABELS.keySet().toArray();
         String data[][] = new String[size][];    
         String column[] = {"No", "Filename", "Actual Label", "Predicted Label"};
         for (int i = 0; i < size; i++) {
             data[i] = new String[]{String.valueOf((i + 1)), 
-                this.data.get(i).getFilename(), 
-                this.data.get(i).getLabel(),
+                this.testData.get(i).getFilename(), 
+                this.testData.get(i).getLabel(),
                 String.valueOf(labels[predictedLabels[i]])};
         }
         
