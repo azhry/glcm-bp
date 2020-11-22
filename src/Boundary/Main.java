@@ -114,7 +114,7 @@ public class Main extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        loadDataButton.setText("Load Data Training");
+        loadDataButton.setText("Load Data Latih dan Ekstraksi");
         loadDataButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadImageData(evt);
@@ -189,7 +189,7 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
-        loadDataTestingButton.setText("Load Data Testing");
+        loadDataTestingButton.setText("Load Data Uji dan Ekstraksi");
         loadDataTestingButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadDataTesting(evt);
@@ -245,7 +245,7 @@ public class Main extends javax.swing.JFrame {
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(overallAccuracyLabel))
                         .addGap(35, 35, 35)
-                        .addComponent(outputNeuronLogPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
+                        .addComponent(outputNeuronLogPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
                         .addGap(24, 24, 24))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)

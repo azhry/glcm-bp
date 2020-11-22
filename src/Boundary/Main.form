@@ -70,7 +70,7 @@
                           <Component id="overallAccuracyLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                      <Component id="outputNeuronLogPanel" pref="217" max="32767" attributes="0"/>
+                      <Component id="outputNeuronLogPanel" pref="228" max="32767" attributes="0"/>
                       <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
@@ -149,7 +149,7 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="loadDataButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Load Data Training"/>
+        <Property name="text" type="java.lang.String" value="Load Data Latih dan Ekstraksi"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadImageData"/>
@@ -331,7 +331,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="loadDataTestingButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Load Data Testing"/>
+        <Property name="text" type="java.lang.String" value="Load Data Uji dan Ekstraksi"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadDataTesting"/>
