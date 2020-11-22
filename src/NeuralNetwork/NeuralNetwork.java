@@ -122,6 +122,7 @@ public class NeuralNetwork {
         model.setColumnCount(2);
         
         for (int e = 0; e < this.EPOCH; e++) {
+            System.out.println("EPOCH " + (e + 1));
             for (int i = 0; i < this.data.length; i++) {
                 // melakukan feedforward
                 this.feedforward(this.data[i]);
@@ -450,16 +451,19 @@ public class NeuralNetwork {
     
     
     private void feedforward(double[] data) {
+        System.out.println("FEED FORWARDING");
         this.calculateInputHidden1(data); // menghitung nilai dari input ke hidden1
         this.calculateHidden1Hidden2(); // menghitung nilai dari hidden1 ke hidden2
         this.calculateHidden2Output(); // menghitung nilai dari hidden2 ke output
     }
     
     private void backpropagation(double[] actual) {
+        System.out.println("BACKPROPAGATION");
         this.calculateOutputHidden2(actual);
     }
     
     private void calculateInputHidden1(double[] data) {
+        System.out.println("Calculating Input - Hidden1 connection");
         for (int i = 0; i < this.numInputNeuron; i++) {
             this.inputNeurons[i].setValue(data[i]); // set nilai tiap neuron input
         }
@@ -476,6 +480,7 @@ public class NeuralNetwork {
             
             // menghitung nilai dengan fungsi aktivasi sigmoid
             double mappedValue = Activation.sigmoid(totalInputValue + bias);
+            System.out.println("Neuron " + (i + 1) + " output: " + mappedValue);
             
             // set nilai tiap neuron hidden1
             this.hiddenNeurons1[i].setValue(totalInputValue + bias);
@@ -484,6 +489,7 @@ public class NeuralNetwork {
     }
     
     private void calculateHidden1Hidden2() {
+        System.out.println("Calculating Hidden2 - Hidden2 connection");
         double bias = MathFx.randUniform(1);
         for (int i = 0; i < this.numHiddenNeuron2; i++) {
             double totalInputValue = 0.0;
@@ -496,6 +502,7 @@ public class NeuralNetwork {
             
             // menghitung nilai dengan fungsi aktivasi sigmoid
             double mappedValue = Activation.sigmoid(totalInputValue + bias);
+            System.out.println("Neuron " + (i + 1) + " output: " + mappedValue);
             
             // set nilai tiap neuron hidden2
             this.hiddenNeurons2[i].setValue(totalInputValue + bias);
@@ -504,7 +511,7 @@ public class NeuralNetwork {
     }
     
     private double[] calculateHidden2Output() {
-        
+        System.out.println("Calculating Hidden2 - Output connection");
         double bias = MathFx.randUniform(1);
         double[] inputValues = new double[this.numOutputNeuron];
         for (int i = 0; i < this.numOutputNeuron; i++) {
@@ -524,6 +531,7 @@ public class NeuralNetwork {
         
         // set nilai tiap neuron output
         for (int i = 0; i < mappedValues.length; i++) {
+            System.out.println("Neuron " + (i + 1) + " output: " + mappedValues[i]);
             this.outputNeurons[i].setMappedValue(mappedValues[i]);
         }
         
@@ -531,6 +539,8 @@ public class NeuralNetwork {
     }
     
     private void calculateOutputHidden2(double[] actual) {
+        System.out.println("Calculating Output - Hidden2 errors");
+
         this.crossEntropyDerivatives = new double[this.numOutputNeuron];
         double[] outputNeuronValues = new double[this.numOutputNeuron];
         for (int i = 0; i < this.numOutputNeuron; i++) {
@@ -558,8 +568,10 @@ public class NeuralNetwork {
                         * this.hiddenNeurons2[j].getMappedValue();
                 
             }
+            System.out.println("Neuron " + (i + 1) + " error: " + a3_delta[i]);
         }
         
+        System.out.println("Calculating Hidden2 - Hidden1 errors");
         double[] hidden2NeuronValues = new double[this.numHiddenNeuron2];
         for (int i = 0; i < this.numHiddenNeuron2; i++) {
             hidden2NeuronValues[i] = this.hiddenNeurons2[i].getMappedValue();
@@ -588,6 +600,7 @@ public class NeuralNetwork {
                         this.hiddenNeurons1[j].getMappedValue();
                 
             }
+            System.out.println("Neuron " + (i + 1) + " error: " + a2_delta[i]);
         }
         
         double[] hidden1NeuronValues = new double[this.numHiddenNeuron1];
@@ -595,6 +608,7 @@ public class NeuralNetwork {
             hidden1NeuronValues[i] = this.hiddenNeurons1[i].getMappedValue();
         }
         
+        System.out.println("Calculating Hidden1 - Input errors");
         // menghitung delta dengan fungsi turunan sigmoid
         double[] a1_delta = Activation.sigmoidDerivatives(hidden1NeuronValues);
         for (int i = 0; i < a1_delta.length; i++) {
@@ -609,6 +623,7 @@ public class NeuralNetwork {
                         this.inputNeurons[j].getValue();
                 
             }
+            System.out.println("Neuron " + (i + 1) + " error: " + a1_delta[i]);
         }
     }
     

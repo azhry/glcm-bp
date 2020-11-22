@@ -11,6 +11,12 @@ import Entity.ImageData;
 import NeuralNetwork.ConfusionMatrix;
 import NeuralNetwork.NeuralNetwork;
 import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Desktop;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -101,6 +107,10 @@ public class Main extends javax.swing.JFrame {
         randomizeCheckBox = new javax.swing.JCheckBox();
         loadDataTestingButton = new javax.swing.JButton();
         overallAccuracyLabel = new javax.swing.JLabel();
+        trainingResultLabel = new javax.swing.JLabel();
+        inputHidden1Label = new javax.swing.JLabel();
+        hidden1Hidden2Label = new javax.swing.JLabel();
+        hidden2OutputLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -186,15 +196,28 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        trainingResultLabel.setToolTipText("");
+
+        inputHidden1Label.setForeground(new java.awt.Color(0, 51, 255));
+
+        hidden1Hidden2Label.setForeground(new java.awt.Color(0, 51, 255));
+
+        hidden2OutputLabel.setForeground(new java.awt.Color(0, 51, 255));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(loadDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(loadDataTestingButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(loadDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(loadDataTestingButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(trainingResultLabel)
+                    .addComponent(inputHidden1Label)
+                    .addComponent(hidden1Hidden2Label)
+                    .addComponent(hidden2OutputLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -239,6 +262,14 @@ public class Main extends javax.swing.JFrame {
                         .addComponent(loadDataButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(loadDataTestingButton)
+                        .addGap(45, 45, 45)
+                        .addComponent(trainingResultLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(inputHidden1Label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(hidden1Hidden2Label)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(hidden2OutputLabel)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -459,7 +490,9 @@ public class Main extends javax.swing.JFrame {
         // menjalankan NeuralNetwork dengan worker
         new RunNeuralNetworkWorker(nn, this.neuralNetworkProgressBar, 
                 this.neuralNetworkLossChart, this.rowLog, this.classifiedRatio, 
-                this.nnResultTable, this.overallAccuracyLabel)
+                this.nnResultTable, this.overallAccuracyLabel, 
+                this.trainingResultLabel, this.inputHidden1Label, 
+                this.hidden1Hidden2Label, this.hidden2OutputLabel)
                 .execute();
     }//GEN-LAST:event_runNeuralNetwork
 
@@ -543,6 +576,10 @@ public class Main extends javax.swing.JFrame {
         private final javax.swing.JLabel lossChart;
         private final javax.swing.JLabel classifiedRatioText;
         private final javax.swing.JLabel overallAccuracyText;
+        private final javax.swing.JLabel trainingResultLabel;
+        private final javax.swing.JLabel inputHidden1Label;
+        private final javax.swing.JLabel hidden1Hidden2Label;
+        private final javax.swing.JLabel hidden2OutputLabel;
         private final javax.swing.JTable nnResultTable;
         private final List<OutputNeuronLog> logs;
         
@@ -551,7 +588,11 @@ public class Main extends javax.swing.JFrame {
                 List<OutputNeuronLog> logs, 
                 javax.swing.JLabel classifiedRatioText, 
                 javax.swing.JTable nnResultTable, 
-                javax.swing.JLabel overallAccuracyText) {
+                javax.swing.JLabel overallAccuracyText,
+                javax.swing.JLabel trainingResultLabel,
+                javax.swing.JLabel inputHidden1Label,
+                javax.swing.JLabel hidden1Hidden2Label,
+                javax.swing.JLabel hidden2OutputLabel) {
             this.nn = nn;
             this.progressBar = progressBar;
             this.lossChart = lossChart;
@@ -559,11 +600,41 @@ public class Main extends javax.swing.JFrame {
             this.classifiedRatioText = classifiedRatioText;
             this.nnResultTable = nnResultTable;
             this.overallAccuracyText = overallAccuracyText;
+            this.trainingResultLabel = trainingResultLabel;
+            this.inputHidden1Label = inputHidden1Label;
+            this.hidden1Hidden2Label = hidden1Hidden2Label;
+            this.hidden2OutputLabel = hidden2OutputLabel;
+        }
+        
+        private void setClickableText(javax.swing.JLabel label, 
+                String text, String link) {
+            label.setText(text);
+            label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            label.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        try {
+                            Desktop.getDesktop().open(
+                                    new File(link));
+                        } catch (IOException e1) {
+
+                            e1.printStackTrace();
+                        }
+                    }
+                });
         }
         
         @Override
         protected void done() {
            
+            this.trainingResultLabel.setText("Hasil bobot pelatihan dapat dilihat di: ");
+            this.setClickableText(this.inputHidden1Label, 
+                    "InputHidden1Weights.json", "InputHidden1Weights.json");
+            this.setClickableText(this.hidden1Hidden2Label, 
+                    "Hidden1Hidden2Weights.json", "Hidden1Hidden2Weights.json");
+            this.setClickableText(this.hidden2OutputLabel, 
+                    "Hidden2OutputWeights.json", "Hidden2OutputWeights.json");
+            
             JOptionPane.showMessageDialog(null, 
                     "Neural Network process is done", "Done", 
                     JOptionPane.INFORMATION_MESSAGE);
@@ -623,6 +694,9 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel classifiedRatio;
     private javax.swing.JSpinner epochField;
     private javax.swing.JTable featuresTable;
+    private javax.swing.JLabel hidden1Hidden2Label;
+    private javax.swing.JLabel hidden2OutputLabel;
+    private javax.swing.JLabel inputHidden1Label;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -637,5 +711,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel outputNeuronLogPanel;
     private javax.swing.JLabel overallAccuracyLabel;
     private javax.swing.JCheckBox randomizeCheckBox;
+    private javax.swing.JLabel trainingResultLabel;
     // End of variables declaration//GEN-END:variables
 }
