@@ -107,7 +107,6 @@ public class NeuralNetwork {
             javax.swing.JLabel neuralNetworkLossChart, 
             List<OutputNeuronLog> logs, 
             javax.swing.JLabel classifiedRatioText, 
-            javax.swing.JTable nnResultTable, 
             javax.swing.JLabel overallAccuracyLabel) {
         this.epochLoss = new ArrayList<>();
         int progress = 0;
@@ -116,10 +115,6 @@ public class NeuralNetwork {
         int corrects = 0;
         int incorrects = 0;
         this.trainCm = new ConfusionMatrix();
-        
-        DefaultTableModel model = (DefaultTableModel)nnResultTable.getModel();
-        model.setRowCount(4);
-        model.setColumnCount(2);
         
         for (int e = 0; e < this.EPOCH; e++) {
             System.out.println("EPOCH " + (e + 1));
@@ -177,15 +172,6 @@ public class NeuralNetwork {
                 progressBar.setString(progress + "%");
             }
             
-            // menampilkan hasil ke dalam table
-            model.setValueAt("(Train = " + Math.round(((this.trainCm.getAccuracy() * 100.0) / 100.0) 
-                    * 100.0) + "%)", 0, 1);
-            model.setValueAt("(Train = " + Math.round(((this.trainCm.getPrecision() * 100.0) / 100.0) 
-                    * 100.0) + "%)", 1, 1);
-            model.setValueAt("(Train = " + Math.round(((this.trainCm.getRecall() * 100.0) / 100.0) 
-                    * 100.0) + "%)", 2, 1);
-            model.setValueAt("(Train = " + Math.round(((this.trainCm.getF1score() * 100.0) / 100.0) 
-                    * 100.0) + "%)", 3, 1);
             this.epochLoss.add(this.error);
             this.displayLossChart(neuralNetworkLossChart);
             
@@ -199,12 +185,12 @@ public class NeuralNetwork {
         this.saveWeight(progressBar);
         
         // melakukan pengujian
-        this.score(this.testData, this.testTarget, model, overallAccuracyLabel);
+        this.score(this.testData, this.testTarget, overallAccuracyLabel);
         return this.trainCm;
     }
     
     public void score(double[][] data, double[][] target, 
-            DefaultTableModel model, javax.swing.JLabel overallAccuracyLabel) {
+            javax.swing.JLabel overallAccuracyLabel) {
         
         // memuat bobot yang disimpan
         this.loadWeight();
@@ -250,21 +236,6 @@ public class NeuralNetwork {
         System.out.println(this.testCm.getTotalSamples());
         System.out.println(this.trainCm.getTotalSamples());
         System.out.println(totalAccuracy);
-        
-        // menampilkan hasil pengujian ke dalam table
-        model.setValueAt(model.getValueAt(0, 1) + ", (Test = " + 
-                Math.round(((this.testCm.getAccuracy() * 100.0) / 100.0) 
-                * 100.0) + "%)", 0, 1);
-        model.setValueAt(model.getValueAt(1, 1) + ", (Test = " + 
-                Math.round(((this.testCm.getPrecision() * 100.0) / 100.0) 
-                * 100.0) + "%)", 1, 1);
-        model.setValueAt(model.getValueAt(2, 1) + ", (Test = " + 
-                Math.round(((this.testCm.getRecall() * 100.0) / 100.0) 
-                * 100.0) + "%)", 2, 1);
-        model.setValueAt(model.getValueAt(3, 1) + ", (Test = " + 
-                Math.round(((this.testCm.getF1score() * 100.0) / 100.0) 
-                * 100.0) + "%)", 3, 1);
-        
         
         // menampilkan akurasi total keseluruhan
         overallAccuracyLabel.setText("(Overall Accuracy = " + 
